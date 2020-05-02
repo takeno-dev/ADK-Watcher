@@ -1,0 +1,1 @@
+ build/flutter_assets/fonts/MaterialIcons-Regular.ttf build/flutter_assets/AssetManifest.json build/flutter_assets/FontManifest.json build/flutter_assets/LICENSE:  /Users/tk1116/Desktop/Develop/flutter_project/flutter_app/pubspec.yaml /Users/tk1116/Desktop/Develop/flutter/bin/cache/artifacts/material_fonts/MaterialIcons-Regular.ttf
