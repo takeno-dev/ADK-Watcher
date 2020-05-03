@@ -30,93 +30,96 @@ class MaterialIconsViewer extends StatelessWidget {
         title: Text("ADK Watcher"),
       ),
       body: SafeArea(
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: FutureBuilder(
-                future: fetchPhotos(http.Client()),
-                builder: (context, future) {
-                  if (!future.hasData) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  final Map<String,dynamic> data = json.decode(future.data[1].body);
-                  String askJson = json.encode(data["order-book"]["ask"]);
-                  String bidJson = json.encode(data["order-book"]["bid"]);
-                  List ask = json.decode(askJson);
-                  List bid = json.decode(bidJson);
-
-                  return Container(
-                    child:Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Container(
-                            child: SizedBox(
-                              width: 170,
-                              height: 200,
-                              child: ListView.builder(
-                                itemCount: bid.length,
-                                itemBuilder: (context, int index) {
-                                  return Padding(
-                                    padding: EdgeInsets.only(right: 0),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Container( child: Text(
-                                          bid[index]['price'].toString(),
-                                          style: TextStyle(
-                                              fontSize: 8
-                                          ),
-                                        ),height: 10, width: 80,),
-                                        Container( child: Text(
-                                          bid[index]['order_amount'].toString(),
-                                          style: TextStyle(
-                                              fontSize: 8
-                                          ),
-                                        )),
-                                      ],
+        child: FutureBuilder(
+          future: fetchPhotos(http.Client()),
+          builder: (context, future) {
+            if (!future.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+            final Map<String,dynamic> data = json.decode(future.data[1].body);
+            String askJson = json.encode(data["order-book"]["ask"]);
+            String bidJson = json.encode(data["order-book"]["bid"]);
+            List ask = json.decode(askJson);
+            List bid = json.decode(bidJson);
+            double aaa = 0;
+            return Container(
+              height: 600,
+              child:Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Expanded(
+                      child: SizedBox(
+                        width: 320,
+                        height: 300,
+                        child: ListView.builder(
+                          itemCount: bid.length,
+                          itemBuilder: (context, int index) {
+                            aaa = aaa + bid[index]['order_value'];
+                            return Padding(
+                              padding: EdgeInsets.only(left: 5),
+                              child: Row(
+                                children: <Widget>[
+                                  Container(
+                                    child: Text(
+                                      ((aaa * 100.0).round() / 100.0).toString(),
+                                      style: TextStyle(
+                                        fontSize: 8,
+                                      ),
+                                    ),height: 10, width: 30,
+                                  ),
+                                  Container(
+                                    child: Text(
+                                      bid[index]['order_amount'].toString(),
+                                      style: TextStyle(
+                                        fontSize: 8,
+                                      ),
+                                    ),height: 10, width: 60,
+                                  ),
+                                  Container( child: Text(
+                                    bid[index]['price'].toString(),
+                                    style: TextStyle(
+                                        fontSize: 8,
+                                        color: Colors.green
                                     ),
-                                  );
-                                },
+                                  ), height: 10, width: 90,
+                                  ),
+                                  Container(
+                                    child: Text(
+                                      ask[index]['price'].toString(),
+                                      style: TextStyle(
+                                          fontSize: 8,
+                                          color: Colors.red
+                                      ),
+                                    ),height: 10, width: 60,
+                                  ),
+                                  Container(
+                                      child: Text(
+                                        ask[index]['order_amount'].toString(),
+                                        style: TextStyle(
+                                          fontSize: 8,
+                                        ),
+                                      ),height: 10, width: 60
+                                  ),
+                                  Container(
+                                      child: Text(
+                                        ask[index]['order_value'].toString(),
+                                        style: TextStyle(
+                                          fontSize: 8,
+                                        ),
+                                      ),height: 10, width: 60
+                                  ),
+                                ],
                               ),
-                            )
+                            );
+                          },
                         ),
-                        Container(
-                            child: SizedBox(
-                              width: 170,
-                              height: 200,
-                              child: ListView.builder(
-                                itemCount: ask.length,
-                                itemBuilder: (context, int index) {
-                                  return Padding(
-                                    padding: EdgeInsets.only(right: 0),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Container( child: Text(
-                                          ask[index]['price'].toString(),
-                                          style: TextStyle(
-                                              fontSize: 8
-                                          ),
-                                        ),height: 10, width: 80,),
-                                        Container( child: Text(
-                                          ask[index]['order_amount'].toString(),
-                                          style: TextStyle(
-                                              fontSize: 8
-                                          ),
-                                        )),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            )
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                      )
+                  ),
+                ],
               ),
-            ),
-
-          ],
+            );
+          },
         ),
       ),
     );

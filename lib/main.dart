@@ -41,7 +41,7 @@ class MaterialIconsViewer extends StatelessWidget {
                   String bidJson = json.encode(data["order-book"]["bid"]);
                   List ask = json.decode(askJson);
                   List bid = json.decode(bidJson);
-
+                  double aaa = 0;
                   return Container(
                     height: 600,
                     child:Row(
@@ -55,21 +55,22 @@ class MaterialIconsViewer extends StatelessWidget {
                               child: ListView.builder(
                                 itemCount: bid.length,
                                 itemBuilder: (context, int index) {
+                                   aaa = aaa + bid[index]['order_value'];
                                   return Padding(
                                     padding: EdgeInsets.only(left: 5),
                                     child: Row(
                                       children: <Widget>[
                                         Container(
                                           child: Text(
-                                            bid[index]['order_amount'].toString(),
+                                            ((aaa * 100.0).round() / 100.0).toString(),
                                             style: TextStyle(
                                               fontSize: 8,
                                             ),
-                                          ),height: 10, width: 60,
+                                          ),height: 10, width: 30,
                                         ),
                                         Container(
                                           child: Text(
-                                            bid[index]['order_value'].toString(),
+                                            bid[index]['order_amount'].toString(),
                                             style: TextStyle(
                                               fontSize: 8,
                                             ),
@@ -81,26 +82,8 @@ class MaterialIconsViewer extends StatelessWidget {
                                               fontSize: 8,
                                               color: Colors.green
                                           ),
-                                        ), height: 10, width: 60,
+                                        ), height: 10, width: 90,
                                         ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            )
-                        ),
-                        Expanded(
-                            child: SizedBox(
-                              width: 180,
-                              height: 300,
-                              child: ListView.builder(
-                                itemCount: ask.length,
-                                itemBuilder: (context, int index) {
-                                  return Padding(
-                                    padding: EdgeInsets.only(left: 5),
-                                    child: Row(
-                                      children: <Widget>[
                                         Container(
                                           child: Text(
                                             ask[index]['price'].toString(),
@@ -112,11 +95,11 @@ class MaterialIconsViewer extends StatelessWidget {
                                         ),
                                         Container(
                                             child: Text(
-                                            ask[index]['order_amount'].toString(),
-                                            style: TextStyle(
-                                              fontSize: 8,
-                                            ),
-                                          ),height: 10, width: 60
+                                              ask[index]['order_amount'].toString(),
+                                              style: TextStyle(
+                                                fontSize: 8,
+                                              ),
+                                            ),height: 10, width: 60
                                         ),
                                         Container(
                                             child: Text(
@@ -130,7 +113,8 @@ class MaterialIconsViewer extends StatelessWidget {
                                     ),
                                   );
                                 },
-                              ),)
+                              ),
+                            )
                         ),
                       ],
                     ),
