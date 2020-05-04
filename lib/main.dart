@@ -1,127 +1,164 @@
+import 'dart:async';
+import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+
+Future<List<Transactios>> fetchTransactios(http.Client client) async {
+  final aaa = await client.get('https://aidosmarket.com/api/transactions?limit=100');
+  // Use the compute function to run parseTransactios in a separate isolate
+  return compute(parseTransactios, aaa.body);
+}
+
+Future<List<OrderBooks>> fetchOrderBook(http.Client client) async {
+  final bbb = await client.get('https://aidosmarket.com/api/order-book');
+  print(compute(parseOrderBook, bbb.body));
+  return compute(parseOrderBook, bbb.body);
+}
+
+
+List<OrderBooks> parseOrderBook(String responseBody) {
+  final Map<String,dynamic> data = json.decode(responseBody);
+  String askJson = json.encode(data["order-book"]["ask"]);
+  String bidJson = json.encode(data["order-book"]["bid"]);
+  List ask = json.decode(askJson);
+  List bid = json.decode(bidJson);
+  ask.map<OrderBooks>((json) => OrderBooks.fromJson(json)).toList();
+  return bid.map<OrderBooks>((json) => OrderBooks.fromJson(json)).toList();
+}
+
+class OrderBooks {
+  final String date;
+  final String orderAmount;
+  final String price;
+
+  OrderBooks({this.date,this.orderAmount,this.price});
+
+  factory OrderBooks.fromJson(Map<String, dynamic> json) {
+    return OrderBooks(
+      date: json['date'],
+      orderAmount: json['order_amount'].toString(),
+      price: json['price'].toString(),
+    );
+  }
+}
+
+// A function that will convert a response body into a List<Transactios>
+List<Transactios> parseTransactios(String responseBody) {
+  final Map<String,dynamic> data = json.decode(responseBody);
+  String transactionsJson = json.encode(data["transactions"]["data"]);
+  print(transactionsJson);
+  List transactions = json.decode(transactionsJson);
+  return transactions.map<Transactios>((json) => Transactios.fromJson(json)).toList();
+}
+
+class Transactios {
+  final String date;
+  final String id;
+  final String price;
+  final String amount;
+
+  Transactios({this.date,this.id,this.price,this.amount});
+  factory Transactios.fromJson(Map<String, dynamic> json) {
+    return Transactios(
+      date: json['date'],
+      id: json['id'].toString(),
+      price: json['price'].toString(),
+      amount: json['amount'].toString(),
+    );
+  }
+}
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MaterialIconsViewer());
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(title: 'ADK Watcher'),
+    );
   }
 }
 
-Future fetchPhotos(http.Client client) async {
-  final response = await client.get('https://aidosmarket.com/api/transactions?limit=100');
-  final response2 = await client.get('https://aidosmarket.com/api/order-book');
-  //print([response,response]);
-  print(response);
-  return([response,response2]);
-  return(response);
-  //return compute(parsePhotos, response.body);
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class MaterialIconsViewer extends StatelessWidget {
+class _MyHomePageState extends State<MyHomePage> {
+  int _count = 100;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("ADK Watcher"),
+        title: Text(widget.title),
       ),
-      body: SafeArea(
-              child: FutureBuilder(
-                future: fetchPhotos(http.Client()),
-                builder: (context, future) {
-                  if (!future.hasData) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  final Map<String,dynamic> data = json.decode(future.data[1].body);
-                  String askJson = json.encode(data["order-book"]["ask"]);
-                  String bidJson = json.encode(data["order-book"]["bid"]);
-                  List ask = json.decode(askJson);
-                  List bid = json.decode(bidJson);
-                  double aaa = 0;
-                  return Container(
-                    height: 600,
-                    child:Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Expanded(
-                            child: SizedBox(
-                              width: 320,
-                              height: 300,
-                              child: ListView.builder(
-                                itemCount: bid.length,
-                                itemBuilder: (context, int index) {
-                                   aaa = aaa + bid[index]['order_value'];
-                                  return Padding(
-                                    padding: EdgeInsets.only(left: 5),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Container(
-                                          child: Text(
-                                            ((aaa * 100.0).round() / 100.0).toString(),
-                                            style: TextStyle(
-                                              fontSize: 8,
-                                            ),
-                                          ),height: 10, width: 30,
-                                        ),
-                                        Container(
-                                          child: Text(
-                                            bid[index]['order_amount'].toString(),
-                                            style: TextStyle(
-                                              fontSize: 8,
-                                            ),
-                                          ),height: 10, width: 60,
-                                        ),
-                                        Container( child: Text(
-                                          bid[index]['price'].toString(),
-                                          style: TextStyle(
-                                              fontSize: 8,
-                                              color: Colors.green
-                                          ),
-                                        ), height: 10, width: 90,
-                                        ),
-                                        Container(
-                                          child: Text(
-                                            ask[index]['price'].toString(),
-                                            style: TextStyle(
-                                                fontSize: 8,
-                                                color: Colors.red
-                                            ),
-                                          ),height: 10, width: 60,
-                                        ),
-                                        Container(
-                                            child: Text(
-                                              ask[index]['order_amount'].toString(),
-                                              style: TextStyle(
-                                                fontSize: 8,
-                                              ),
-                                            ),height: 10, width: 60
-                                        ),
-                                        Container(
-                                            child: Text(
-                                              ask[index]['order_value'].toString(),
-                                              style: TextStyle(
-                                                fontSize: 8,
-                                              ),
-                                            ),height: 10, width: 60
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                },
-                              ),
-                            )
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+      body: Padding(
+        child: FutureBuilder<List<Transactios>>(
+          future: fetchTransactios(http.Client()),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) print(snapshot.error);
+            return snapshot.hasData ?
+            RefreshIndicator(
+              child: TransactiosList(photos: snapshot.data, count: _count),
+              onRefresh: _refreshhandle,
+            )
+            : Center(child: CircularProgressIndicator());
+          },
+        ),
+        padding: EdgeInsets.fromLTRB(1.0, 1.0, 1.0, 1.0),
       ),
+    );
+  }
+
+  Future<Null> _refreshhandle() async {
+    setState(() {
+      _count;
+    });
+    return null;
+  }
+}
+
+class TransactiosList extends StatelessWidget {
+  final List<Transactios> photos;
+  final int count;
+  TransactiosList({Key key, this.photos, this.count}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      itemCount: photos.length,
+      itemBuilder: (context, index) {
+        return Row(
+          children: <Widget>[
+             Divider(
+                color: Colors.black
+            ),
+            Center(
+                child:Text(photos[index].date)
+            ),
+            Center(
+                 child:Text(photos[index].price)
+            ),
+            Center(
+                child:Text(photos[index].amount),
+            ),
+          ],
+        );
+      },
+      separatorBuilder: (context, index) {
+        return Divider();
+      },
     );
   }
 }

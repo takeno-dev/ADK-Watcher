@@ -8,30 +8,50 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: MaterialIconsViewer());
+    return MaterialApp(home: MyHomePage());
   }
 }
 
-Future fetchPhotos(http.Client client) async {
-  final response = await client.get('https://aidosmarket.com/api/transactions?limit=100');
-  final response2 = await client.get('https://aidosmarket.com/api/order-book');
-  //print([response,response]);
-  print(response);
-  return([response,response2]);
-  return(response);
-  //return compute(parsePhotos, response.body);
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class MaterialIconsViewer extends StatelessWidget {
+
+class _MyHomePageState extends State<MyHomePage> {
+
+  DateTime updated_at = new DateTime.now();
+
+  Future<void> _onRefresh() async {
+    setState(() {
+      updated_at = new DateTime.now();
+    });
+  }
+
+  Future _fetchPhotos(http.Client client) async {
+    final response = await client.get('https://aidosmarket.com/api/transactions?limit=100');
+    final response2 = await client.get('https://aidosmarket.com/api/order-book');
+    //print([response,response]);
+    print(response);
+    return([response,response2]);
+    return(response);
+    //return compute(parsePhotos, response.body);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("ADK Watcher"),
       ),
-      body: SafeArea(
+      body: new RefreshIndicator(
+        onRefresh: _onRefresh,
         child: FutureBuilder(
-          future: fetchPhotos(http.Client()),
+          future: _fetchPhotos(http.Client()),
           builder: (context, future) {
             if (!future.hasData) {
               return Center(child: CircularProgressIndicator());
@@ -42,6 +62,8 @@ class MaterialIconsViewer extends StatelessWidget {
             List ask = json.decode(askJson);
             List bid = json.decode(bidJson);
             double aaa = 0;
+            print(updated_at);
+
             return Container(
               height: 600,
               child:Row(
@@ -52,7 +74,8 @@ class MaterialIconsViewer extends StatelessWidget {
                       child: SizedBox(
                         width: 320,
                         height: 300,
-                        child: ListView.builder(
+                        child:
+                        ListView.builder(
                           itemCount: bid.length,
                           itemBuilder: (context, int index) {
                             aaa = aaa + bid[index]['order_value'];
