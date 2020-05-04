@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 Future<List<Transactios>> fetchTransactios(http.Client client) async {
-  final aaa = await client.get('https://aidosmarket.com/api/transactions?limit=100');
+  final aaa =
+      await client.get('https://aidosmarket.com/api/transactions?limit=100');
   // Use the compute function to run parseTransactios in a separate isolate
   return compute(parseTransactios, aaa.body);
 }
@@ -17,9 +18,8 @@ Future<List<OrderBooks>> fetchOrderBook(http.Client client) async {
   return compute(parseOrderBook, bbb.body);
 }
 
-
 List<OrderBooks> parseOrderBook(String responseBody) {
-  final Map<String,dynamic> data = json.decode(responseBody);
+  final Map<String, dynamic> data = json.decode(responseBody);
   String askJson = json.encode(data["order-book"]["ask"]);
   String bidJson = json.encode(data["order-book"]["bid"]);
   List ask = json.decode(askJson);
@@ -33,24 +33,27 @@ class OrderBooks {
   final String orderAmount;
   final String price;
 
-  OrderBooks({this.date,this.orderAmount,this.price});
+  OrderBooks({this.date, this.orderAmount, this.price});
 
   factory OrderBooks.fromJson(Map<String, dynamic> json) {
+    print(json['price'].round());
     return OrderBooks(
       date: json['date'],
       orderAmount: json['order_amount'].toString(),
-      price: json['price'].toString(),
+      price: json['price'].round().toString(),
     );
   }
 }
 
 // A function that will convert a response body into a List<Transactios>
 List<Transactios> parseTransactios(String responseBody) {
-  final Map<String,dynamic> data = json.decode(responseBody);
+  final Map<String, dynamic> data = json.decode(responseBody);
   String transactionsJson = json.encode(data["transactions"]["data"]);
   print(transactionsJson);
   List transactions = json.decode(transactionsJson);
-  return transactions.map<Transactios>((json) => Transactios.fromJson(json)).toList();
+  return transactions
+      .map<Transactios>((json) => Transactios.fromJson(json))
+      .toList();
 }
 
 class Transactios {
@@ -59,13 +62,14 @@ class Transactios {
   final String price;
   final String amount;
 
-  Transactios({this.date,this.id,this.price,this.amount});
+  Transactios({this.date, this.id, this.price, this.amount});
+
   factory Transactios.fromJson(Map<String, dynamic> json) {
     return Transactios(
       date: json['date'],
       id: json['id'].toString(),
       price: json['price'].toString(),
-      amount: json['amount'].toString(),
+      amount: json['amount'].round().toString(),
     );
   }
 }
@@ -78,9 +82,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
       ),
-      home: MyHomePage(title: 'ADK Watcher'),
+      home: MyHomePage(),
     );
   }
 }
@@ -101,19 +105,20 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Logo(),
       ),
       body: Padding(
         child: FutureBuilder<List<Transactios>>(
           future: fetchTransactios(http.Client()),
           builder: (context, snapshot) {
             if (snapshot.hasError) print(snapshot.error);
-            return snapshot.hasData ?
-            RefreshIndicator(
-              child: TransactiosList(photos: snapshot.data, count: _count),
-              onRefresh: _refreshhandle,
-            )
-            : Center(child: CircularProgressIndicator());
+            return snapshot.hasData
+                ? RefreshIndicator(
+                    child:
+                        TransactiosList(photos: snapshot.data, count: _count),
+                    onRefresh: _refreshhandle,
+                  )
+                : Center(child: CircularProgressIndicator());
           },
         ),
         padding: EdgeInsets.fromLTRB(1.0, 1.0, 1.0, 1.0),
@@ -129,29 +134,57 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+class Logo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center, // centers horizontally
+      crossAxisAlignment: CrossAxisAlignment.center, // centers vertically
+      children: <Widget>[
+        Image.asset("assets/adk.png", width: 30, height: 30),
+        SizedBox(
+          width: 3,
+        ), // The size box provides an immediate spacing between the widgets
+        Text("ADK Watcher",)
+      ],
+    );
+  }
+}
+
 class TransactiosList extends StatelessWidget {
   final List<Transactios> photos;
   final int count;
+
   TransactiosList({Key key, this.photos, this.count}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
+    final TransactiosList = ListView.separated(
       itemCount: photos.length,
       itemBuilder: (context, index) {
         return Row(
           children: <Widget>[
-             Divider(
-                color: Colors.black
+            Divider(color: Colors.black),
+            Center(
+                child: Container(
+                    width: 150,
+                    margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
+                    child: Text(photos[index].date)
+                )
             ),
             Center(
-                child:Text(photos[index].date)
+                child: Container(
+                  width: 90,
+                  margin: EdgeInsets.fromLTRB(0, 2, 5, 0),
+                  child: Text(photos[index].price),
+                )
             ),
             Center(
-                 child:Text(photos[index].price)
-            ),
-            Center(
-                child:Text(photos[index].amount),
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(0, 2, 10, 0),
+                  child: Text(photos[index].amount),
+                )
             ),
           ],
         );
@@ -159,6 +192,58 @@ class TransactiosList extends StatelessWidget {
       separatorBuilder: (context, index) {
         return Divider();
       },
+    );
+
+    final topTitle = Container(
+        color: Colors.black,
+        child: Row(
+          children: <Widget>[
+            Divider(color: Colors.black),
+            Container(
+                child: Container(
+                    width: 150,
+                    margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
+                    child: Text(
+                      'Date',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ))),
+            Container(
+                child: Container(
+              width: 90,
+              margin: EdgeInsets.fromLTRB(0, 2, 5, 0),
+              child: Text(
+                'Price',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            )),
+            Container(
+                child: Container(
+              margin: EdgeInsets.fromLTRB(0, 2, 10, 0),
+              child: Text(
+                'Amount',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+            )),
+          ],
+        ));
+
+    //main
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(bottom: 10.0),
+            child: topTitle,
+          ),
+          Flexible(child: TransactiosList),
+        ],
+      ),
     );
   }
 }
