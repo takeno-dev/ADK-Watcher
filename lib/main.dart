@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import "package:intl/intl.dart";
+import 'package:intl/date_symbol_data_local.dart';
 
 Future<List<Transactios>> fetchTransactios(http.Client client) async {
   final aaa =
@@ -36,7 +37,9 @@ class OrderBooks {
   OrderBooks({this.date, this.orderAmount, this.price});
 
   factory OrderBooks.fromJson(Map<String, dynamic> json) {
-    print(json['price'].round());
+    var formatter = new DateFormat('yyyy/MM/dd(E) HH:mm', "ja_JP");
+    var formatted = formatter.format(json['date']); // DateからString
+    print(formatted);
     return OrderBooks(
       date: json['date'],
       orderAmount: json['order_amount'].toString(),
@@ -61,15 +64,23 @@ class Transactios {
   final String id;
   final String price;
   final String amount;
+  final String type;
 
-  Transactios({this.date, this.id, this.price, this.amount});
+  Transactios({this.date, this.id, this.price, this.amount, this.type});
 
   factory Transactios.fromJson(Map<String, dynamic> json) {
+    initializeDateFormatting("ja_JP");
+    DateTime datetime = DateTime.parse(json['date']); // StringからDate
+    var _9hourssAfter = datetime.add(new Duration(hours: 9));
+    var formatter = new DateFormat('yyyy/MM/dd HH:mm', "ja_JP");
+    var formatted = formatter.format(_9hourssAfter); // DateからString
+
     return Transactios(
-      date: json['date'],
+      date: formatted,
       id: json['id'].toString(),
       price: json['price'].toString(),
       amount: json['amount'].round().toString(),
+      type: json['type'],
     );
   }
 }
@@ -79,6 +90,9 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    print(now);
+    print(now.timeZoneName);
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -145,7 +159,9 @@ class Logo extends StatelessWidget {
         SizedBox(
           width: 3,
         ), // The size box provides an immediate spacing between the widgets
-        Text("ADK Watcher",)
+        Text(
+          "ADK Watcher",
+        )
       ],
     );
   }
@@ -157,36 +173,45 @@ class TransactiosList extends StatelessWidget {
 
   TransactiosList({Key key, this.photos, this.count}) : super(key: key);
 
-
   @override
   Widget build(BuildContext context) {
     final TransactiosList = ListView.separated(
       itemCount: photos.length,
       itemBuilder: (context, index) {
-        return Row(
-          children: <Widget>[
-            Divider(color: Colors.black),
-            Center(
-                child: Container(
-                    width: 150,
-                    margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
-                    child: Text(photos[index].date)
-                )
-            ),
-            Center(
-                child: Container(
-                  width: 90,
-                  margin: EdgeInsets.fromLTRB(0, 2, 5, 0),
-                  child: Text(photos[index].price),
-                )
-            ),
-            Center(
-                child: Container(
-                  margin: EdgeInsets.fromLTRB(0, 2, 10, 0),
-                  child: Text(photos[index].amount),
-                )
-            ),
-          ],
+        return Container(
+          child: Row(
+            children: <Widget>[
+              Divider(color: Colors.black),
+              Center(
+                  child: Container(
+                width: 30,
+                margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
+                child: Text(
+                  photos[index].type,
+                  style: TextStyle(
+                    color:
+                        photos[index].type == 'Buy' ? Colors.green : Colors.red,
+                  ),
+                ),
+              )),
+              Center(
+                  child: Container(
+                      width: 150,
+                      margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
+                      child: Text(photos[index].date))),
+              Center(
+                  child: Container(
+                width: 90,
+                margin: EdgeInsets.fromLTRB(0, 2, 5, 0),
+                child: Text(photos[index].price),
+              )),
+              Center(
+                  child: Container(
+                margin: EdgeInsets.fromLTRB(0, 2, 10, 0),
+                child: Text(photos[index].amount),
+              )),
+            ],
+          ),
         );
       },
       separatorBuilder: (context, index) {
@@ -199,6 +224,16 @@ class TransactiosList extends StatelessWidget {
         child: Row(
           children: <Widget>[
             Divider(color: Colors.black),
+            Container(
+                child: Container(
+                    width: 32,
+                    margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
+                    child: Text(
+                      'Type',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ))),
             Container(
                 child: Container(
                     width: 150,

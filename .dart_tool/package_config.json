@@ -56,6 +56,12 @@
       "languageVersion": "2.2"
     },
     {
+      "name": "flutter_localizations",
+      "rootUri": "file:///Users/tk1116/Desktop/Develop/flutter/packages/flutter_localizations",
+      "packageUri": "lib/",
+      "languageVersion": "2.2"
+    },
+    {
       "name": "flutter_test",
       "rootUri": "file:///Users/tk1116/Desktop/Develop/flutter/packages/flutter_test",
       "packageUri": "lib/",
@@ -76,6 +82,12 @@
     {
       "name": "image",
       "rootUri": "file:///Users/tk1116/.pub-cache/hosted/pub.dartlang.org/image-2.1.4",
+      "packageUri": "lib/",
+      "languageVersion": "2.0"
+    },
+    {
+      "name": "intl",
+      "rootUri": "file:///Users/tk1116/.pub-cache/hosted/pub.dartlang.org/intl-0.16.0",
       "packageUri": "lib/",
       "languageVersion": "2.0"
     },
@@ -182,7 +194,7 @@
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2020-05-03T05:50:19.878988Z",
+  "generated": "2020-05-05T07:47:48.561527Z",
   "generator": "pub",
   "generatorVersion": "2.7.2"
 }
