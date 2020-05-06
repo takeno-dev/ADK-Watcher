@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 class Aaa extends StatelessWidget {
   @override
@@ -10,7 +8,7 @@ class Aaa extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Status'),
+      home: MyHomePage(title: ' Status'),
     );
   }
 }
@@ -25,7 +23,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +30,8 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Container(
-        child:Text('Status'),
+        child: Text('Status'),
       ),
     );
   }
+}

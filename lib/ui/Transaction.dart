@@ -74,9 +74,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Logo(),
-      ),
       body: Padding(
         child: FutureBuilder<List<Transactions>>(
           future: fetchTransactions(http.Client()),
@@ -132,6 +129,7 @@ class TransactionsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TransactionsList = ListView.separated(
+      padding: EdgeInsets.fromLTRB(1.0, 6.0, 1.0, 1.0),
       itemCount: photos.length,
       itemBuilder: (context, index) {
         return Container(
@@ -227,10 +225,7 @@ class TransactionsList extends StatelessWidget {
     return Container(
       child: Column(
         children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(bottom: 10.0),
-            child: topTitle,
-          ),
+          topTitle,
           Flexible(child: TransactionsList),
         ],
       ),
