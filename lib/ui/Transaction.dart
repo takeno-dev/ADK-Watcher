@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import "package:intl/intl.dart";
 import 'package:intl/date_symbol_data_local.dart';
 
+
 Future<List<Transactions>> fetchTransactions(http.Client client) async {
   final transactionData = await client.get('https://aidosmarket.com/api/transactions?limit=100');
   return compute(parseTransactions, transactionData.body);
@@ -43,6 +44,7 @@ class Transactions {
       type: json['type'],
     );
   }
+
 }
 
 class TransactionsMain extends StatelessWidget {
@@ -59,11 +61,9 @@ class TransactionsMain extends StatelessWidget {
   }
 }
 
+
+
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -77,14 +77,12 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Padding(
         child: FutureBuilder<List<Transactions>>(
           future: fetchTransactions(http.Client()),
-          builder: (context, snapshot) {
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasError) print(snapshot.error);
             return snapshot.hasData
-                ? RefreshIndicator(
-              child:
-              TransactionsList(photos: snapshot.data, count: _count),
-              onRefresh: _refreshhandle,
-            )
+                ? RefreshIndicator(child: TransactionsList(photos: snapshot.data, count: _count),
+                  onRefresh: _refreshHandle,
+                )
                 : Center(child: CircularProgressIndicator());
           },
         ),
@@ -93,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<Null> _refreshhandle() async {
+  Future<Null> _refreshHandle() async {
     setState(() {
       _count;
     });
@@ -101,24 +99,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class Logo extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center, // centers horizontally
-      crossAxisAlignment: CrossAxisAlignment.center, // centers vertically
-      children: <Widget>[
-        Image.asset("assets/adk.png", width: 30, height: 30),
-        SizedBox(
-          width: 3,
-        ), // The size box provides an immediate spacing between the widgets
-        Text(
-          "ADK Watcher",
-        )
-      ],
-    );
-  }
-}
 
 class TransactionsList extends StatelessWidget {
   final List<Transactions> photos;
