@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'ui/Transaction.dart';
 import 'ui/Orderbook.dart';
+import 'ui/Stats.dart';
 
 void main() => runApp(MyApp());
 
@@ -30,10 +31,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   static  List<Widget> _widgetOptions = <Widget>[
     TransactionsMain(),
     OrderBookMain(),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+    StatsMain()
   ];
 
   void _onItemTapped(int index) {

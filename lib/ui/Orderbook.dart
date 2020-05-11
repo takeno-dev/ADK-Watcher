@@ -64,10 +64,10 @@ Future<List<OrderBooks>> fetchOrderBooks(http.Client client) async {
 
 // A function that will convert a response body into a List<OrderBooks>
 List<OrderBooks> parseOrderBooks(String responseBody) {
-  final List<dynamic> data = json.decode(responseBody);
-  //String orderBooksJson = json.encode(data["order-book"]['ask']);
-  //List orderBooks = json.decode(orderBooksJson);
-  return data.map<OrderBooks>((json) => OrderBooks.fromJson(json)).toList();
+  final Map<String, dynamic> data = json.decode(responseBody);
+  String orderBooksJson = json.encode(data["order-book"]['ask']);
+  List orderBooks = json.decode(orderBooksJson);
+  return orderBooks.map<OrderBooks>((json) => OrderBooks.fromJson(json)).toList();
 }
 
 class OrderBooks {
@@ -77,13 +77,13 @@ class OrderBooks {
 
   OrderBooks({this.price, this.orderAmount, this.orderValue});
 
-  factory OrderBooks.fromJson(List<dynamic> json) {
+  factory OrderBooks.fromJson(Map<String, dynamic> json) {
     print(json);
 
     return OrderBooks(
-      //price: json['price'].toString(),
-      //orderAmount: json['order_amount'].toString(),
-      //orderValue: json['order_value'].toString(),
+      price: json['price'].toString(),
+      orderAmount: json['order_amount'].toString(),
+      orderValue: json['order_value'].toString(),
     );
   }
 }
