@@ -4,5 +4,6 @@
 .idea
 .packages
 .pub/
+.build/
 packagesmaster
 /android/app/app.iml

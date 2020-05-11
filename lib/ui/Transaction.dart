@@ -6,62 +6,15 @@ import 'package:http/http.dart' as http;
 import "package:intl/intl.dart";
 import 'package:intl/date_symbol_data_local.dart';
 
-
-Future<List<Transactions>> fetchTransactions(http.Client client) async {
-  final transactionData = await client.get('https://aidosmarket.com/api/transactions?limit=100');
-  return compute(parseTransactions, transactionData.body);
-}
-
-// A function that will convert a response body into a List<Transactions>
-List<Transactions> parseTransactions(String responseBody) {
-  final Map<String, dynamic> data = json.decode(responseBody);
-  String transactionsJson = json.encode(data["transactions"]["data"]);
-  List transactions = json.decode(transactionsJson);
-  return transactions.map<Transactions>((json) => Transactions.fromJson(json)).toList();
-}
-
-class Transactions {
-  final String date;
-  final String id;
-  final String price;
-  final String amount;
-  final String type;
-
-  Transactions({this.date, this.id, this.price, this.amount, this.type});
-
-  factory Transactions.fromJson(Map<String, dynamic> json) {
-    initializeDateFormatting("ja_JP");
-    DateTime datetime = DateTime.parse(json['date']); // StringからDate
-    var _9hourssAfter = datetime.add(new Duration(hours: 9));
-    var formatter = new DateFormat('yyyy/MM/dd HH:mm');
-    var formattedDate = formatter.format(_9hourssAfter); // DateからString
-
-    return Transactions(
-      date: formattedDate,
-      id: json['id'].toString(),
-      price: json['price'].toString(),
-      amount: json['amount'].round().toString(),
-      type: json['type'],
-    );
-  }
-
-}
-
 class TransactionsMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
       home: MyHomePage(),
     );
   }
 }
-
-
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -211,4 +164,44 @@ class TransactionsList extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<List<Transactions>> fetchTransactions(http.Client client) async {
+  final transactionData = await client.get('https://aidosmarket.com/api/transactions?limit=100');
+  return compute(parseTransactions, transactionData.body);
+}
+
+// A function that will convert a response body into a List<Transactions>
+List<Transactions> parseTransactions(String responseBody) {
+  final Map<String, dynamic> data = json.decode(responseBody);
+  String transactionsJson = json.encode(data["transactions"]["data"]);
+  List transactions = json.decode(transactionsJson);
+  return transactions.map<Transactions>((json) => Transactions.fromJson(json)).toList();
+}
+
+class Transactions {
+  final String date;
+  final String id;
+  final String price;
+  final String amount;
+  final String type;
+
+  Transactions({this.date, this.id, this.price, this.amount, this.type});
+
+  factory Transactions.fromJson(Map<String, dynamic> json) {
+    initializeDateFormatting("ja_JP");
+    DateTime datetime = DateTime.parse(json['date']); // StringからDate
+    var _9hourssAfter = datetime.add(new Duration(hours: 9));
+    var formatter = new DateFormat('yyyy/MM/dd HH:mm');
+    var formattedDate = formatter.format(_9hourssAfter); // DateからString
+
+    return Transactions(
+      date: formattedDate,
+      id: json['id'].toString(),
+      price: json['price'].toString(),
+      amount: json['amount'].round().toString(),
+      type: json['type'],
+    );
+  }
+
 }
