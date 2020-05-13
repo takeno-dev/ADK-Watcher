@@ -60,12 +60,37 @@ class StatsList extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final last = Container(
+      padding: EdgeInsets.all(20.0),
       child: Column(
         children: <Widget>[
           Row(
             children: <Widget>[
-              Text(photos[0].bid),
-              Text(photos[0].ask),
+              Container(
+                width:100,
+                height: 30,
+                child: Text(photos[0].lastPrice),
+              ),
+              Container(
+                width:100,
+                height: 30,
+                child: Text(photos[0].lastPrice),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Container(
+                color: Colors.red,
+                width:100,
+                height: 30,
+                child: Text(photos[0].ask),
+              ),
+              Container(
+                color: Colors.red,
+                width:100,
+                height: 30,
+                child: Text(photos[0].bid),
+              ),
             ],
           ),
           Row(
@@ -121,14 +146,15 @@ class Stats {
     return Stats(
       ask: json['ask'].toString(),
       bid: json['bid'].toString(),
-      lastTransactionType: json['lastTransactionType'].toString(),
-      lastTransactionCurrency: json['lastTransactionCurrency'].toString(),
-      h24Volume: json['h24Volume'].toString(),
-      h24VolumeBuy: json['h24VolumeBuy'].toString(),
-      h24VolumeSell: json['h24VolumeSell'].toString(),
-      h1Volume: json['h1Volume'].toString(),
-      h1VolumeBuy: json['h1VolumeBuy'].toString(),
-      h1VolumeSell: json['h1VolumeSell'].toString(),
+      lastPrice: json['last_price'].toString(),
+      lastTransactionType: json['last_transaction_type'].toString(),
+      lastTransactionCurrency: json['last_transaction_currency'].toString(),
+      h24Volume: json['24h_volume'].toString(),
+      h24VolumeBuy: json['24h_volume_buy'].toString(),
+      h24VolumeSell: json['24h_volume_sell'].toString(),
+      h1Volume: json['1h_volume'].toString(),
+      h1VolumeBuy: json['1h_volume_buy'].toString(),
+      h1VolumeSell: json['1h_volume_sell'].toString(),
     );
   }
 }
