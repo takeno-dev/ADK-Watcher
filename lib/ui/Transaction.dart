@@ -10,6 +10,7 @@ class TransactionsMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: MyHomePage(),
     );
   }
@@ -21,7 +22,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _count = 100;
+  int _count = 50;
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +46,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<Null> _refreshHandle() async {
     setState(() {
-      _count;
+      _count++;
     });
-    return null;
+    print(_count);
   }
 }
 
@@ -60,6 +61,7 @@ class TransactionsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(photos.length);
     final TransactionsList = ListView.separated(
       padding: EdgeInsets.fromLTRB(1.0, 6.0, 1.0, 1.0),
       itemCount: photos.length,

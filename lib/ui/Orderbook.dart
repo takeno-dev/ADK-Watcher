@@ -1,19 +1,20 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'model.dart';
+import 'test.dart';
 
 
 class OrderBookMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: OrderBookPage(),
     );
   }
 }
-
 class OrderBookPage extends StatefulWidget{
   @override
   _OrderBookPageState createState() => _OrderBookPageState();
@@ -24,79 +25,54 @@ class _OrderBookPageState extends State<OrderBookPage> {
 
   @override
   Widget build(BuildContext context) {
-    //return Container(child:Text('aaa'));
     return Scaffold(
       body:Padding(
-        child: FutureBuilder<List<OrderBooks>>(
+        padding: EdgeInsets.fromLTRB(1.0, 1.0, 1.0, 1.0),
+        child: FutureBuilder(
           future: fetchOrderBooks(http.Client()),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.hasError) print(snapshot.error);
             return snapshot.hasData
-                ? RefreshIndicator(
-                  child: OrderBookList(
-                      photos: snapshot.data,
-                      count: _count
-                  ),
-              onRefresh: _refreshHandle,
-            )
+                ? OrderBookList(
+                      orders: snapshot.data,
+                  )
                 : Center(child: CircularProgressIndicator());
           },
         ),
-        padding: EdgeInsets.fromLTRB(1.0, 1.0, 1.0, 1.0),
       )
     );
   }
 
   Future<Null> _refreshHandle() async {
     setState(() {
-      _count;
+      _count++;
     });
     return null;
   }
 }
 
-Future<List<OrderBooks>> fetchOrderBooks(http.Client client) async {
+Future <List<List<OrderBooks>>> fetchOrderBooks(http.Client client) async {
   final orderBookData = await client.get('https://aidosmarket.com/api/order-book');
-  return compute(parseOrderBooks, orderBookData.body);
-}
-
-// A function that will convert a response body into a List<OrderBooks>
-List<OrderBooks> parseOrderBooks(String responseBody) {
-  final Map<String, dynamic> data = json.decode(responseBody);
-  String orderBooksJson = json.encode(data["order-book"]['ask']);
-  List orderBooks = json.decode(orderBooksJson);
-  return orderBooks.map<OrderBooks>((json) => OrderBooks.fromJson(json)).toList();
-}
-
-class OrderBooks {
-  final String price;
-  final String orderAmount;
-  final String orderValue;
-
-  OrderBooks({this.price, this.orderAmount, this.orderValue});
-
-  factory OrderBooks.fromJson(Map<String, dynamic> json) {
-    print(json);
-
-    return OrderBooks(
-      price: json['price'].toString(),
-      orderAmount: json['order_amount'].toString(),
-      orderValue: json['order_value'].toString(),
-    );
-  }
+  final statsData = await client.get('https://aidosmarket.com/api/stats');
+  final bbb =  compute(parseOrderBooks, orderBookData.body);
+  final ccc =  compute(parseStats, statsData.body);
+  print(bbb);
+  print('-----------------');
+  print(ccc);
+  return bbb;
 }
 
 class OrderBookList extends StatelessWidget {
-  final List<OrderBooks> photos;
-  final int count;
+  final List<List<OrderBooks>> orders;
 
-  OrderBookList({Key key, this.photos, this.count}) : super(key: key);
+  OrderBookList({Key key, this.orders}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final OrderBookList = ListView.separated(
-      padding: EdgeInsets.fromLTRB(1.0, 6.0, 1.0, 1.0),
-      itemCount: photos.length,
+      padding: EdgeInsets.fromLTRB(1.0, 6.0, 1.0, 6.0),
+      itemCount: 100,
+      reverse: true,
       itemBuilder: (context, index) {
         return Container(
           child: Row(
@@ -104,22 +80,58 @@ class OrderBookList extends StatelessWidget {
               Divider(color: Colors.black),
               Center(
                   child: Container(
-                    width: 30,
+                    width: 100,
                     margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
                     child: Text(
-                      photos[index].price,
+                      orders[0][index].price,
                     ),
                   )),
               Center(
                   child: Container(
-                      width: 150,
+                      width: 100,
                       margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
-                      child: Text(photos[index].orderAmount))),
+                      child: Text(orders[0][index].orderAmount))),
               Center(
                   child: Container(
-                    width: 90,
+                    width: 160,
                     margin: EdgeInsets.fromLTRB(0, 2, 5, 0),
-                    child: Text(photos[index].orderValue),
+                    child: Text(orders[0][index].orderValue),
+                  )),
+            ],
+          ),
+        );
+      },
+      separatorBuilder: (context, index) {
+        return Divider();
+      },
+    );
+
+    final OrderBookList2 = ListView.separated(
+      padding: EdgeInsets.fromLTRB(1.0, 6.0, 1.0, 6.0),
+      itemCount: 100,
+      itemBuilder: (context, index) {
+        return Container(
+          child: Row(
+            children: <Widget>[
+              Divider(color: Colors.black),
+              Center(
+                  child: Container(
+                    width: 100,
+                    margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
+                    child: Text(
+                      orders[1][index].price,
+                    ),
+                  )),
+              Center(
+                  child: Container(
+                      width: 100,
+                      margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
+                      child: Text(orders[1][index].orderAmount))),
+              Center(
+                  child: Container(
+                    width: 160,
+                    margin: EdgeInsets.fromLTRB(0, 2, 5, 0),
+                    child: Text(orders[1][index].orderValue),
                   )),
             ],
           ),
@@ -137,7 +149,7 @@ class OrderBookList extends StatelessWidget {
             Divider(color: Colors.black),
             Container(
                 child: Container(
-                    width: 32,
+                    width: 100,
                     margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
                     child: Text(
                       'Type',
@@ -147,7 +159,7 @@ class OrderBookList extends StatelessWidget {
                     ))),
             Container(
                 child: Container(
-                    width: 150,
+                    width: 100,
                     margin: EdgeInsets.fromLTRB(5, 2, 10, 0),
                     child: Text(
                       'Date',
@@ -157,7 +169,7 @@ class OrderBookList extends StatelessWidget {
                     ))),
             Container(
                 child: Container(
-                  width: 90,
+                  width: 160,
                   margin: EdgeInsets.fromLTRB(0, 2, 5, 0),
                   child: Text(
                     'Price',
@@ -175,6 +187,8 @@ class OrderBookList extends StatelessWidget {
         children: <Widget>[
           topTitle,
           Flexible(child: OrderBookList),
+          aaa,
+          Flexible(child: OrderBookList2),
         ],
       ),
     );

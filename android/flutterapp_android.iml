@@ -96,5 +96,10 @@
     <orderEntry type="library" name="Gradle: androidx.collection:collection:1.1.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: io.flutter:x86_64_debug:1.0.0-540786dd51f112885a89792d678296b95e6622e5@jar" level="project" />
     <orderEntry type="library" name="Gradle: io.flutter:flutter_embedding_debug:1.0.0-540786dd51f112885a89792d678296b95e6622e5@jar" level="project" />
+    <orderEntry type="library" name="Gradle: io.flutter:arm64_v8a_debug:1.0.0-ef9215ceb2884ddf520d321bcd822d1461330876@jar" level="project" />
+    <orderEntry type="library" name="Gradle: io.flutter:x86_64_debug:1.0.0-ef9215ceb2884ddf520d321bcd822d1461330876@jar" level="project" />
+    <orderEntry type="library" name="Gradle: io.flutter:armeabi_v7a_debug:1.0.0-ef9215ceb2884ddf520d321bcd822d1461330876@jar" level="project" />
+    <orderEntry type="library" name="Gradle: io.flutter:flutter_embedding_debug:1.0.0-ef9215ceb2884ddf520d321bcd822d1461330876@jar" level="project" />
+    <orderEntry type="library" name="Gradle: io.flutter:x86_debug:1.0.0-ef9215ceb2884ddf520d321bcd822d1461330876@jar" level="project" />
   </component>
 </module>

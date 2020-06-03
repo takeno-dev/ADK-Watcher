@@ -8,6 +8,7 @@ class StatsMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: MyHomePage(),
     );
   }
@@ -38,6 +39,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         padding: EdgeInsets.fromLTRB(1.0, 1.0, 1.0, 1.0),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          _refreshHandle();
+        },
+      ),
     );
   }
 
@@ -45,7 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _count;
     });
-    return null;
   }
 }
 
@@ -60,47 +65,11 @@ class StatsList extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final last = Container(
-      padding: EdgeInsets.all(20.0),
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Container(
-                width:100,
-                height: 30,
-                child: Text(photos[0].lastPrice),
-              ),
-              Container(
-                width:100,
-                height: 30,
-                child: Text(photos[0].lastPrice),
-              ),
-            ],
-          ),
-          Row(
-            children: <Widget>[
-              Container(
-                color: Colors.red,
-                width:100,
-                height: 30,
-                child: Text(photos[0].ask),
-              ),
-              Container(
-                color: Colors.red,
-                width:100,
-                height: 30,
-                child: Text(photos[0].bid),
-              ),
-            ],
-          ),
-          Row(
-            children: <Widget>[
-              Text('aaa'),
-              Text('aaa'),
-            ],
-          )
+      child:Column(
+        children: [
+
         ],
-      ),
+      )
     );
 
     //MainContainer
